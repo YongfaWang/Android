@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="mytoast">
+        <item name="stTextBold">true</item>
+        <item name="stTextColor">#fff</item>
+        <item name="stTextSize">14sp</item>
+        <item name="stColorBackground">#8BC34A</item>
+        <item name="stSolidBackground">true</item>
+        <item name="stLength">LONG</item> LONG or SHORT
+        <item name="stRadius">30dp</item>
+    </style>
+        <!--沉浸式导航栏(半透明)-->
+    <style name="TranslucentTheme" parent="Theme.Listen">
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+        <!--Android 5.x开始需要把颜色设置透明，否则导航栏会呈现系统默认的浅灰色-->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:fitsSystemWindows">false</item>
+    </style>
+
+        <!--底部导航-->
+    <style name="navigation" parent="Widget.Design.BottomNavigationView">
+        <item name="colorPrimary">@color/lsStandard</item>
+        <item name="colorPrimaryDark">@color/lsStandard</item>
+        <item name="colorControlHighlight">@color/lsStandard</item>
+    </style>
+</resources>

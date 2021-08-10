@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="mytoast">
+        <item name="stTextBold">true</item>
+        <item name="stTextColor">#000000</item>
+        <item name="stTextSize">14sp</item>
+        <item name="stColorBackground">#E91E63</item>
+        <item name="stSolidBackground">true</item>
+        <item name="stLength">LONG</item> LONG or SHORT
+        <item name="stRadius">30dp</item>
+    </style>
+
+
+    <!--底部导航栏-->
+    <style name="navigation" parent="Widget.Design.BottomNavigationView">
+        <item name="colorPrimary">@color/lsStandard</item>
+        <item name="android:textColor">@color/lsSecondary</item>
+    </style>
+</resources>
