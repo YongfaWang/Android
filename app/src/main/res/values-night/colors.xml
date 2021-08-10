@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="lsStandard">#447BA0</color>
+    <color name="lsSecondary">#BEBEBE</color>
+    <color name="lsBackgound">#333333</color>
+</resources>
