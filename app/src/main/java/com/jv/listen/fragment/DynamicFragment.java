@@ -20,9 +20,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lecho.lib.hellocharts.model.Axis;
+import lecho.lib.hellocharts.model.AxisValue;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
+import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.view.LineChartView;
 
 public class DynamicFragment extends Fragment {
@@ -52,10 +54,8 @@ public class DynamicFragment extends Fragment {
                     } else {                    // 其他表
 
                         List<PointValue> values = new ArrayList<PointValue>();
-                        values.add(new PointValue(0, 2));
-                        values.add(new PointValue(1, 4));
-                        values.add(new PointValue(2, 3));
-                        values.add(new PointValue(3, 4));
+                        for(int index = 0; index < Dist.size(); index++)
+                            values.add(new PointValue(index, new Float(Dist.get(index))));
 
                         //In most cased you can call data model methods in builder-pattern-like manner.
                         Line line = new Line(values).setColor(Color.BLUE).setCubic(true);
@@ -65,7 +65,24 @@ public class DynamicFragment extends Fragment {
                         LineChartData data = new LineChartData();
                         data.setLines(lines);
                         lineChartView.setZoomEnabled(false);
+
+                        List<AxisValue> axisX = new ArrayList<>();
+                        List<AxisValue> axisY = new ArrayList<>();
+                        for(int index = 0; index < GPST.size(); index++)
+                            axisX.add(new AxisValue(index).setLabel(GPST.get(index)));
+                        for(int index = 0; index < Dist.size(); index++)
+                            axisY.add(new AxisValue(index).setLabel(Dist.get(index)));
+                        Axis axis1 = new Axis();
+                        Axis axis2 = new Axis();
+                        axis2.setValues(axisY);
+                        axis1.setValues(axisX);
+                        data.setAxisXBottom(axis1);
+                        data.setAxisYLeft(axis2);
+
+
+
                         lineChartView.setLineChartData(data);
+
                         System.err.println("setData.....!!!");
 
                     }
