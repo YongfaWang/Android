@@ -1,5 +1,6 @@
 package com.jv.listen.activity;
 
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.Window;
@@ -57,7 +58,8 @@ public class Home extends AppCompatActivity {
                     System.err.println("Class Error Message ->\n" + e.getMessage());
                 }
                 try {
-                    connection = DriverManager.getConnection("jdbc:mysql://113.219.245.205:3306/RTKSaveDataRelease?serverTimezone=UTC&useSSL=false","root","123456");
+//                    connection = DriverManager.getConnection("jdbc:mysql://113.219.245.205:3306/RTKSaveDataRelease?serverTimezone=UTC&useSSL=false","root","123456");
+                    connection = DriverManager.getConnection("jdbc:mysql://112.46.66.4:3306/RTKSaveDataRelease?serverTimezone=UTC&useSSL=false","root","123456");
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                     System.err.println("SQL Error Message ->\n" + throwables.getMessage());

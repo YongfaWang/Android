@@ -25,6 +25,7 @@
         android:layout_width="297dp"
         android:layout_height="559dp"
         android:gravity="center_horizontal"
+        android:scrollbars="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.482"
