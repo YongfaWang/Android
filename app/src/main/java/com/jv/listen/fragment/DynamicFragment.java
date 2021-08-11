@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import lecho.lib.hellocharts.formatter.SimpleLineChartValueFormatter;
 import lecho.lib.hellocharts.gesture.ContainerScrollType;
 import lecho.lib.hellocharts.gesture.ZoomType;
 import lecho.lib.hellocharts.model.Axis;
@@ -64,9 +65,11 @@ public class DynamicFragment extends Fragment {
 
                         //In most cased you can call data model methods in builder-pattern-like manner.
                         Line line = new Line(values).setColor(Color.BLUE).setCubic(true);
-                        List<Line> lines = new ArrayList<Line>();
+                        List<Line> lines = new ArrayList<>();
+                        line.setStrokeWidth(2);
+                        line.setPointRadius(3);
+                        line.setCubic(false);//曲线是否平滑，即是曲线还是折线\
                         lines.add(line);
-
                         LineChartData data = new LineChartData();
                         data.setLines(lines);
                         lineChartView.setZoomEnabled(false);
@@ -77,18 +80,21 @@ public class DynamicFragment extends Fragment {
                             axisX.add(new AxisValue(index).setLabel(GPST.get(index)));
 
                         List<AxisValue> axisY = new ArrayList<>();
-                        for (int index = 0; index < Dist.size(); index++) {
-                            axisY.add(new AxisValue(index));
-                            System.err.println(Dist.get(index));
-                        }
+//                        for (int index = 0; index < Dist.size(); index++) {
+//                            axisY.add(new AxisValue(index).setLabel("1"));
+//                            // System.err.println(Dist.get(index));
+//                        }
 
                         Axis axis1 = new Axis();
                         axis1.setValues(axisX);
+                        axis1.setTextSize(10);
                         axis1.setTextColor(Color.BLUE);
 
                         Axis axis2 = new Axis();
 //                        axis2.setValues(axisY);
-                        axis2.setTextSize(10);
+                        axis2.setInside(true);
+//                        axis2.setName("");
+                        axis2.setTextSize(7);
                         axis2.setTextColor(Color.BLUE);
 
                         data.setAxisXBottom(axis1);

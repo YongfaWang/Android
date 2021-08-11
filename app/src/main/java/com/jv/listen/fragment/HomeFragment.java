@@ -5,8 +5,10 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -58,6 +60,7 @@ public class HomeFragment extends Fragment {
     Handler t_handler = new Handler();
 
     View retView = null;
+    TextView textView = null;
 
     Timer timer = new Timer();
 
@@ -115,7 +118,7 @@ public class HomeFragment extends Fragment {
         @Override
         public void run() {
         System.err.println("调用...");
-        TextView textView = retView.findViewById(R.id.result_textview);
+
 //                int line = 0;
         Thread selectTable = new Thread(() -> {
             clearAllList();
@@ -138,6 +141,10 @@ public class HomeFragment extends Fragment {
                             int s = Integer.valueOf(str.substring(str.length() - 1,str.length()));
                             ++s;
                             str = str.substring(0,str.length() - 1) + s;
+                            if(s >= 10)
+                                str = str.substring(0,str.length() - 2) + s;
+                            else
+                                str = str.substring(0,str.length() - 1) + s;
                         }
                         GPST.add(str);
                         BaseName.add(resultSet.getString("BaseName"));
@@ -158,7 +165,10 @@ public class HomeFragment extends Fragment {
                         if(Integer.valueOf(str2) > 5) {
                             int s = Integer.valueOf(str.substring(str.length() - 1,str.length()));
                             ++s;
-                            str = str.substring(0,str.length() - 1) + s;
+                            if(s >= 10)
+                                str = str.substring(0,str.length() - 2) + s;
+                            else
+                                str = str.substring(0,str.length() - 1) + s;
                         }
                         GPST.add(str);
                         Dist.add(resultSet.getString("Dist"));
@@ -186,13 +196,13 @@ public class HomeFragment extends Fragment {
                     if(spinner.getSelectedItem().toString().equals("BaseStationXYZ")) {
                         String temp = "";
                         for(int index = 0; index < GPST.size(); index++) {
-                            temp += GPST.get(index) + "\n" + BaseName.get(index) + "\n" + BX.get(index) + "\n" + BY.get(index) + "\n" + BZ.get(index) + "\n\n";
+                            temp += GPST.get(index) + "\t" + BaseName.get(index) + "\t" + BX.get(index) + "\t" + BY.get(index) + "\t" + BZ.get(index) + "\n\n";
                         }
                         textView.setText(temp);
                     } else {
                         String temp = "";
                         for(int index = 0; index < GPST.size(); index++) {
-                            temp += GPST.get(index) + "\n" + Dist.get(index) + "\n" + Ratio.get(index) + "\n\n";
+                            temp += GPST.get(index) + "\t" + Dist.get(index) + "\t" + Ratio.get(index) + "\n\n";
                         }
                         textView.setText(temp);
                     }
@@ -216,7 +226,17 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         retView = inflater.inflate(R.layout.home_fragment,container,false);
+        textView = retView.findViewById(R.id.result_textview);
         spinner = retView.findViewById(R.id.spinner);
+        textView.setMovementMethod(new ScrollingMovementMethod());//设置textview可以滑动
+        textView.setScrollbarFadingEnabled(false);//设置scrollbar一直显示
+        textView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                textView.getParent().requestDisallowInterceptTouchEvent(true);
+                return false;
+            }
+        });
         // 可以在这里写布局事件
         tableListThread.start();
         return retView;
