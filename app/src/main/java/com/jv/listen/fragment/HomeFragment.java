@@ -50,6 +50,9 @@ public class HomeFragment extends Fragment {
     private ArrayList<String> BX = new ArrayList<>();
     private ArrayList<String> BY = new ArrayList<>();
     private ArrayList<String> BZ = new ArrayList<>();
+    private ArrayList<String> dRX = new ArrayList<>();
+    private ArrayList<String> dRY = new ArrayList<>();
+    private ArrayList<String> dRZ = new ArrayList<>();
 
     // 数据库语句(查询TABLES表内的NUMBER条数据)
     private String SQL_SELECT_UNKOWN_TABLE = "SELECT * FROM <TABLES> order by ID desc limit <NUMBER>;";
@@ -125,6 +128,8 @@ public class HomeFragment extends Fragment {
             SQL_SELECT_UNKOWN_TABLE = "SELECT * FROM " + spinner.getSelectedItem().toString() + " order by ID desc limit 30;";
             ResultSet resultSet = null;
             try {
+                if(statement.isClosed())
+                    return;
                 resultSet = statement.executeQuery(SQL_SELECT_UNKOWN_TABLE);
                 if(resultSet == null)
                     return;
@@ -133,12 +138,10 @@ public class HomeFragment extends Fragment {
                     while(resultSet.next())
                     {
                         // 仅取时分秒,毫秒的四舍五入结果对秒影响
-                        String str = resultSet.getString("GPST");
-                        str = str.substring(11,19);
-                        String str2 = resultSet.getString("GPST");
-                        str2 = str2.substring(20,21);
-                        if(Integer.valueOf(str2) > 5) {
-                            int s = Integer.valueOf(str.substring(str.length() - 1,str.length()));
+                        String str = resultSet.getString("GPST").substring(11,19);
+                        String str2 = resultSet.getString("GPST").substring(20,21);
+                        if(Integer.parseInt(str2) > 5) {
+                            int s = Integer.parseInt(str.substring(str.length() - 1));
                             ++s;
                             str = str.substring(0,str.length() - 1) + s;
                             if(s >= 10)
@@ -158,12 +161,10 @@ public class HomeFragment extends Fragment {
                     while(resultSet.next())
                     {
                         // 仅取时分秒,毫秒的四舍五入结果对秒影响
-                        String str = resultSet.getString("GPST");
-                        str = str.substring(11,19);
-                        String str2 = resultSet.getString("GPST");
-                        str2 = str2.substring(20,21);;
-                        if(Integer.valueOf(str2) > 5) {
-                            int s = Integer.valueOf(str.substring(str.length() - 1,str.length()));
+                        String str = resultSet.getString("GPST").substring(11,19);
+                        String str2 = resultSet.getString("GPST").substring(20,21);
+                        if(Integer.parseInt(str2) > 5) {
+                            int s = Integer.parseInt(str.substring(str.length() - 1));
                             ++s;
                             if(s >= 10)
                                 str = str.substring(0,str.length() - 2) + s;
@@ -173,11 +174,17 @@ public class HomeFragment extends Fragment {
                         GPST.add(str);
                         Dist.add(resultSet.getString("Dist"));
                         Ratio.add(resultSet.getString("Ratio"));
+                        dRX.add((resultSet.getString("dRX")));
+                        dRY.add((resultSet.getString("dRX")));
+                        dRZ.add((resultSet.getString("dRX")));
 //                                ++line;
                     }
                 }
             } catch (SQLException throwables) {
-                throwables.printStackTrace();
+                if(throwables.getErrorCode() == 0)
+                    System.err.println("SQL 断开连接");
+//                throwables.printStackTrace();
+                return;
             }
 
             Bundle bundle = new Bundle();
@@ -188,6 +195,9 @@ public class HomeFragment extends Fragment {
             bundle.putStringArrayList("BX",BX);
             bundle.putStringArrayList("BY",BY);
             bundle.putStringArrayList("BZ",BZ);
+            bundle.putStringArrayList("dRX",dRX);
+            bundle.putStringArrayList("dRY",dRY);
+            bundle.putStringArrayList("dRZ",dRZ);
             echats_handler.sendMessage(echats_handler.obtainMessage(ConstText.DATA_CHANGE,bundle));
             // 异步操作UI,将run函数交给UI线程去处理
             t_handler.post(new Runnable() {
@@ -202,7 +212,7 @@ public class HomeFragment extends Fragment {
                     } else {
                         String temp = "";
                         for(int index = 0; index < GPST.size(); index++) {
-                            temp += GPST.get(index) + "\t" + Dist.get(index) + "\t" + Ratio.get(index) + "\n\n";
+                            temp += GPST.get(index) + "\t" + Dist.get(index) + "\t" + Ratio.get(index) + dRX.get(index) + "\t" + dRY.get(index) + "\t" + dRZ.get(index) +  "\n\n";
                         }
                         textView.setText(temp);
                     }
@@ -250,6 +260,9 @@ public class HomeFragment extends Fragment {
         BX.clear();
         BY.clear();
         BZ.clear();
+        dRX.clear();
+        dRY.clear();
+        dRZ.clear();
     }
 
     @Override

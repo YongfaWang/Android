@@ -12,6 +12,7 @@
 
     <Spinner
         android:id="@+id/spinner"
+        android:elevation="1dp"
         android:layout_width="300dp"
         android:layout_height="50dp"
         android:layout_marginTop="48dp"
@@ -26,10 +27,12 @@
         android:layout_height="559dp"
         android:gravity="center_horizontal"
         android:scrollbars="vertical"
+        android:textColor="@color/lsRed"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.482"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/spinner"
-        app:layout_constraintVertical_bias="0.175" />
+        app:layout_constraintVertical_bias="0.175"
+        android:elevation="0dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

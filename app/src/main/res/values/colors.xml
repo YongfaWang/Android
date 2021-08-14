@@ -11,4 +11,5 @@
     <color name="lsSecondary">#646464</color>
     <color name="lsBackgound">#E6E6E6</color>
     <color name="alphaWhite">#CCFFFFFF</color>
+    <color name="lsRed">#FF5353</color>
 </resources>

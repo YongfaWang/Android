@@ -63,14 +63,17 @@ public class Home extends AppCompatActivity {
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                     System.err.println("SQL Error Message ->\n" + throwables.getMessage());
+                    return;
                 }
-                if(connection == null)
-                    System.err.println("连接对象为空");
+                if(connection == null) {
+                    return;
+                }
                 try {
                     statement = connection.createStatement();
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                     System.err.println("SQL Error Message ->\n" + throwables.getMessage());
+                    return;
                 }
 //                String sql = "select * from LJH01_LJH15";
             }
@@ -86,7 +89,7 @@ public class Home extends AppCompatActivity {
     //初始化fragment和fragment数组
     void initFragment()
     {
-        dynamicFragment = new DynamicFragment();
+        dynamicFragment = new DynamicFragment(Home.this);
         homeFragment = new HomeFragment(connection,statement,Home.this,dynamicFragment.getHandler());
         meFragment = new MeFragment();
         fragments = new Fragment[]{ homeFragment, dynamicFragment, meFragment };

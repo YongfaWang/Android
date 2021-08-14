@@ -5,16 +5,27 @@
     android:layout_height="match_parent"
     android:background="@color/lsBackgound">
 
+    <Spinner
+        android:id="@+id/dataComs"
+        android:layout_width="200dp"
+        android:layout_height="100dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:elevation="1dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
     <lecho.lib.hellocharts.view.LineChartView
         android:id="@+id/chart"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="48dp"
         app:layout_constraintBottom_toTopOf="@+id/textView"
-        android:layout_marginLeft="10dp"
         app:layout_constraintEnd_toEndOf="parent"
+        android:elevation="0dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"/>
+
 
     <TextView
         android:id="@+id/textView"
