@@ -12,4 +12,7 @@
     <color name="lsBackgound">#E6E6E6</color>
     <color name="alphaWhite">#CCFFFFFF</color>
     <color name="lsRed">#FF5353</color>
+    <color name="lsBlue">#5353FF</color>
+    <color name="lsYellow">#FF9800</color>
+    <color name="lsGreen">#53FF53</color>
 </resources>

@@ -8,13 +8,15 @@
         <entry key="app/src/main/res/drawable/qqlogin_button.xml" value="0.18958333333333333" />
         <entry key="app/src/main/res/drawable/qqlogin_button_style.xml" value="0.18958333333333333" />
         <entry key="app/src/main/res/drawable/shadow_shape.xml" value="0.1" />
+        <entry key="app/src/main/res/layout-land/home.xml" value="0.1472663139329806" />
+        <entry key="app/src/main/res/layout-land/home_fragment.xml" value="0.1472663139329806" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.2521150592216582" />
-        <entry key="app/src/main/res/layout/dynamic_fragment.xml" value="0.18" />
+        <entry key="app/src/main/res/layout/dynamic_fragment.xml" value="0.1464354527938343" />
         <entry key="app/src/main/res/layout/home.xml" value="0.1390625" />
         <entry key="app/src/main/res/layout/home_fragment.xml" value="0.22" />
         <entry key="app/src/main/res/layout/home_fragment2.xml" value="0.1" />
         <entry key="app/src/main/res/layout/listview_item.xml" value="0.161231884057971" />
-        <entry key="app/src/main/res/layout/me_fragment.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/me_fragment.xml" value="0.18" />
         <entry key="app/src/main/res/layout/shadow_shape.xml" value="0.1" />
         <entry key="app/src/main/res/menu/navigation.xml" value="0.1734375" />
       </map>

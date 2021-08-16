@@ -2,6 +2,7 @@ package com.jv.listen.fragment;
 
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -37,12 +38,14 @@ import io.github.muddz.styleabletoast.StyleableToast;
 public class HomeFragment extends Fragment {
 
     private Handler echats_handler;
+    Handler statusHandler;
     private Connection connection = null;
     private Statement statement = null;
     private Context context = null;         // 上下文对象,操作UI需要
     private Spinner spinner = null;         // 下拉菜单组件
 
     // 数据库数据
+    private String DATE = new String();
     private ArrayList<String> GPST = new ArrayList<>();     // 其他
     private ArrayList<String> Dist = new ArrayList<>();
     private ArrayList<String> Ratio = new ArrayList<>();
@@ -59,16 +62,10 @@ public class HomeFragment extends Fragment {
 
     // 数据库中所有表
     ArrayList<String> arrayList = new ArrayList<>();
-
     Handler t_handler = new Handler();
-
     View retView = null;
     TextView textView = null;
-
     Timer timer = new Timer();
-
-    boolean isTimer = true;
-
     private Thread tableListThread = new Thread(() -> {
         // timer.cancel();
         if(connection == null)
@@ -128,11 +125,14 @@ public class HomeFragment extends Fragment {
             SQL_SELECT_UNKOWN_TABLE = "SELECT * FROM " + spinner.getSelectedItem().toString() + " order by ID desc limit 30;";
             ResultSet resultSet = null;
             try {
-                if(statement.isClosed())
+                if(statement.isClosed()) {
                     return;
+                }
                 resultSet = statement.executeQuery(SQL_SELECT_UNKOWN_TABLE);
-                if(resultSet == null)
+                if(resultSet == null) {
                     return;
+                }
+                boolean statuslook = true;
                 if(spinner.getSelectedItem().toString().equals("BaseStationXYZ"))
                 {
                     while(resultSet.next())
@@ -144,10 +144,16 @@ public class HomeFragment extends Fragment {
                             int s = Integer.parseInt(str.substring(str.length() - 1));
                             ++s;
                             str = str.substring(0,str.length() - 1) + s;
-                            if(s >= 10)
+                            if(s >= 10) {
                                 str = str.substring(0,str.length() - 2) + s;
-                            else
+                            }
+                            else {
                                 str = str.substring(0,str.length() - 1) + s;
+                            }
+                        }
+                        if(statuslook) {
+                            DATE = resultSet.getString("GPST");
+                            statuslook = false;
                         }
                         GPST.add(str);
                         BaseName.add(resultSet.getString("BaseName"));
@@ -166,19 +172,29 @@ public class HomeFragment extends Fragment {
                         if(Integer.parseInt(str2) > 5) {
                             int s = Integer.parseInt(str.substring(str.length() - 1));
                             ++s;
-                            if(s >= 10)
+                            if(s >= 10) {
                                 str = str.substring(0,str.length() - 2) + s;
-                            else
+                            }
+                            else {
                                 str = str.substring(0,str.length() - 1) + s;
+                            }
+                        }
+                        if(statuslook) {
+                            DATE = resultSet.getString("GPST");
+                            statuslook = false;
                         }
                         GPST.add(str);
                         Dist.add(resultSet.getString("Dist"));
                         Ratio.add(resultSet.getString("Ratio"));
                         dRX.add((resultSet.getString("dRX")));
-                        dRY.add((resultSet.getString("dRX")));
-                        dRZ.add((resultSet.getString("dRX")));
-//                                ++line;
+                        dRY.add((resultSet.getString("dRY")));
+                        dRZ.add((resultSet.getString("dRZ")));
                     }
+                }
+
+                // 发送最后一个时间
+                if(statusHandler != null) {
+                    sendStatus();
                 }
             } catch (SQLException throwables) {
                 if(throwables.getErrorCode() == 0)
@@ -206,13 +222,13 @@ public class HomeFragment extends Fragment {
                     if(spinner.getSelectedItem().toString().equals("BaseStationXYZ")) {
                         String temp = "";
                         for(int index = 0; index < GPST.size(); index++) {
-                            temp += GPST.get(index) + "\t" + BaseName.get(index) + "\t" + BX.get(index) + "\t" + BY.get(index) + "\t" + BZ.get(index) + "\n\n";
+                            temp += GPST.get(index) + "\t " + BaseName.get(index) + "\t " + BX.get(index) + "\t " + BY.get(index) + "\t " + BZ.get(index) + "\n\n";
                         }
                         textView.setText(temp);
                     } else {
                         String temp = "";
                         for(int index = 0; index < GPST.size(); index++) {
-                            temp += GPST.get(index) + "\t" + Dist.get(index) + "\t" + Ratio.get(index) + dRX.get(index) + "\t" + dRY.get(index) + "\t" + dRZ.get(index) +  "\n\n";
+                            temp += GPST.get(index) + "\t " + Dist.get(index) + "\t " + Ratio.get(index) + dRX.get(index) + "\t " + dRY.get(index) + "\t " + dRZ.get(index) +  "\n\n";
                         }
                         textView.setText(temp);
                     }
@@ -225,7 +241,7 @@ public class HomeFragment extends Fragment {
     }
 
 
-    public HomeFragment(Connection connection, Statement statement, Context context,Handler handler) {
+    public HomeFragment(Connection connection, Statement statement, Context context, Handler handler) {
         this.connection = connection;
         this.statement = statement;
         this.context = context;
@@ -263,6 +279,17 @@ public class HomeFragment extends Fragment {
         dRX.clear();
         dRY.clear();
         dRZ.clear();
+    }
+
+
+    public void setStatusHandler(Handler handler) {
+        this.statusHandler = handler;
+    }
+
+    private void sendStatus() {
+        Bundle bundle = new Bundle();
+        bundle.putString("DATE",DATE);
+        statusHandler.sendMessage(statusHandler.obtainMessage(ConstText.DATA_UPDATA_STATUS,bundle));
     }
 
     @Override

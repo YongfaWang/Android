@@ -90,8 +90,9 @@ public class Home extends AppCompatActivity {
     void initFragment()
     {
         dynamicFragment = new DynamicFragment(Home.this);
+        meFragment = new MeFragment(Home.this);
         homeFragment = new HomeFragment(connection,statement,Home.this,dynamicFragment.getHandler());
-        meFragment = new MeFragment();
+        homeFragment.setStatusHandler(meFragment.getHandler());
         fragments = new Fragment[]{ homeFragment, dynamicFragment, meFragment };
         lastFragment = 0;
         getSupportFragmentManager().beginTransaction().replace(R.id.views,homeFragment).show(homeFragment).commit();

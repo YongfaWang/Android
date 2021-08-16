@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,6 +20,8 @@ import androidx.fragment.app.Fragment;
 
 import com.jv.listen.ConstText;
 import com.jv.listen.R;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,6 +44,7 @@ public class DynamicFragment extends Fragment {
     View view;
     LineChartView lineChartView;
     Spinner spinner;
+    TextView lineMapTitle;
     Context context;
 
     public DynamicFragment(Context context) {
@@ -52,6 +56,8 @@ public class DynamicFragment extends Fragment {
             super.handleMessage(msg);
             switch (msg.what) {
                 case ConstText.DATA_CHANGE:
+                    if(lineChartView == null || spinner == null || context == null || lineMapTitle == null)
+                        return;
                     //  数据发生改变
                     Bundle bundle = (Bundle) msg.obj;
                     ArrayList<String> GPST = (ArrayList<String>) bundle.get("GPST");
@@ -65,8 +71,6 @@ public class DynamicFragment extends Fragment {
                     ArrayList<String> dRY = (ArrayList<String>) bundle.get("dRY");
                     ArrayList<String> dRZ = (ArrayList<String>) bundle.get("dRZ");
 
-                    if(lineChartView == null || spinner == null || context == null)
-                        return;
                     if(BaseName.size() == 30) { // BaseStationXYZ 图表
 
                     } else {                    // 其他表
@@ -77,8 +81,6 @@ public class DynamicFragment extends Fragment {
                         Collections.reverse(dRX);
                         Collections.reverse(dRY);
                         Collections.reverse(dRZ);
-
-                        System.err.println(spinner.getSelectedItem().toString());
                         switch (spinner.getSelectedItem().toString()) {
                             case "Dist":
                                 DrawLine(GPST, Dist);
@@ -96,6 +98,8 @@ public class DynamicFragment extends Fragment {
                                 DrawLine(GPST, dRZ);
                                 break;
                         }
+                        // 设置线图标题
+                        lineMapTitle.setText(spinner.getSelectedItem().toString());
                     }
             }
         }
@@ -156,12 +160,14 @@ public class DynamicFragment extends Fragment {
         lineChartView.setCurrentViewport(v);
         System.err.println("setData.....!!!");
     }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.dynamic_fragment,container,false);
         lineChartView = view.findViewById(R.id.chart);
         spinner = view.findViewById(R.id.dataComs);
+        lineMapTitle = view.findViewById(R.id.lineMapTitle);
         ArrayList<String> arrayList = new ArrayList<>();
         arrayList.add("Dist");
         arrayList.add("Ratio");
@@ -181,4 +187,5 @@ public class DynamicFragment extends Fragment {
     public Handler getHandler() {
         return handler;
     }
+
 }
