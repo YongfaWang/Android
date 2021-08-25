@@ -21,13 +21,17 @@ import com.jv.listen.utils.StatusBar;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 public class Home extends AppCompatActivity {
 
-    private Connection connection = null;
-    private Statement statement = null;
+    private Connection connection;
+    private Statement statement;
+    private ArrayList<String> databaseName = new ArrayList<>();
 
     BottomNavigationView bottomNavigationView;
     HomeFragment homeFragment;
@@ -59,7 +63,7 @@ public class Home extends AppCompatActivity {
                 }
                 try {
 //                    connection = DriverManager.getConnection("jdbc:mysql://113.219.245.205:3306/RTKSaveDataRelease?serverTimezone=UTC&useSSL=false","root","123456");
-                    connection = DriverManager.getConnection("jdbc:mysql://112.46.66.4:3306/RTKSaveDataRelease?serverTimezone=UTC&useSSL=false","root","123456");
+                    connection = DriverManager.getConnection("jdbc:mysql://112.46.66.4:3306/mysql?serverTimezone=UTC&useSSL=false","root","123456");
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                     System.err.println("SQL Error Message ->\n" + throwables.getMessage());
@@ -70,6 +74,23 @@ public class Home extends AppCompatActivity {
                 }
                 try {
                     statement = connection.createStatement();
+                    ResultSet rs2 = statement.executeQuery("show databases;");
+                    ResultSetMetaData rs_metaData = rs2.getMetaData();
+                    while (rs2.next()){
+                        int count = rs_metaData.getColumnCount();
+                        for (int i = 0; i < count; i++) {
+                            System.out.println(rs2.getString(i + 1));
+                            if(rs2.getString(i + 1).contains("RTK"))
+                                databaseName.add(rs2.getString(i + 1));
+                        }
+                    }
+                    System.err.println("+++++++++++++++++++++++++++++++++"+databaseName+"+++++++++++++++++++++++++++++++++" + databaseName.get(0));
+                    System.err.println("Address" + connection);
+                    connection = DriverManager.getConnection("jdbc:mysql://112.46.66.4:3306/" + databaseName.get(0) + "?serverTimezone=UTC&useSSL=false","root","123456");
+                    statement = connection.createStatement();
+                    System.err.println("Address" + connection);
+                    if(connection == null)
+                        System.err.println("指定数据库返回NULL！！！");
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                     System.err.println("SQL Error Message ->\n" + throwables.getMessage());
@@ -85,12 +106,14 @@ public class Home extends AppCompatActivity {
             e.printStackTrace();
         }
         initFragment();
+        homeFragment.setDatabaseList(databaseName);
     }
     //初始化fragment和fragment数组
     void initFragment()
     {
         dynamicFragment = new DynamicFragment(Home.this);
         meFragment = new MeFragment(Home.this);
+        System.err.println("传入构造时的地址"+ connection);
         homeFragment = new HomeFragment(connection,statement,Home.this,dynamicFragment.getHandler());
         homeFragment.setStatusHandler(meFragment.getHandler());
         fragments = new Fragment[]{ homeFragment, dynamicFragment, meFragment };

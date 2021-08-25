@@ -71,7 +71,9 @@ public class DynamicFragment extends Fragment {
                     ArrayList<String> dRY = (ArrayList<String>) bundle.get("dRY");
                     ArrayList<String> dRZ = (ArrayList<String>) bundle.get("dRZ");
 
-                    if(BaseName.size() == 30) { // BaseStationXYZ 图表
+                    System.err.println("Base Size -> " + BaseName.size() + "\t" + "Dist Size -> " + Dist.size());
+
+                    if(BaseName.size() > Dist.size()) { // BaseStationXYZ 图表
 
                     } else {                    // 其他表
                         // 翻转集合

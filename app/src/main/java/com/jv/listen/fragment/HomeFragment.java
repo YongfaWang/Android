@@ -2,10 +2,8 @@ package com.jv.listen.fragment;
 
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,7 +14,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,26 +23,28 @@ import com.jv.listen.ConstText;
 import com.jv.listen.R;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import io.github.muddz.styleabletoast.StyleableToast;
-
 public class HomeFragment extends Fragment {
 
     private Handler echats_handler;
     Handler statusHandler;
-    private Connection connection = null;
-    private Statement statement = null;
-    private Context context = null;         // 上下文对象,操作UI需要
-    private Spinner spinner = null;         // 下拉菜单组件
+    private Connection connection;
+    private Statement statement;
+    private Context context;         // 上下文对象,操作UI需要
+    private Spinner tablesSpinner;         // 下拉菜单组件
+    private Spinner databaseSpinner;         // 下拉菜单组件
 
     // 数据库数据
     private String DATE = new String();
+    private ArrayList<String> databaselist = new ArrayList<>();
     private ArrayList<String> GPST = new ArrayList<>();     // 其他
     private ArrayList<String> Dist = new ArrayList<>();
     private ArrayList<String> Ratio = new ArrayList<>();
@@ -74,41 +73,70 @@ public class HomeFragment extends Fragment {
             Log.e("HomeFragment","NULL Statement");
         if(context == null)
             Log.e("HomeFragment","NULL Context");
-        String sql = "show tables;";
-        ResultSet rs = null;
-        try {
-            rs = statement.executeQuery(sql);
-            if(rs == null)
-                return;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.err.println("SQL Error Message ->\n" + e.getMessage());
-        }
-        try {
-            while(rs.next()) {
-                arrayList.add(rs.getString(1));
-                // GPST DIST    RATIO
-            }
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(context,R.layout.listview_item,arrayList);
+        if(databaselist.size() != 0) {
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(context,R.layout.listview_item,databaselist);
             t_handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    spinner.setAdapter(adapter);
+                    databaseSpinner.setAdapter(adapter);
+                    databaseSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    String sql = "show tables;";
+                                    ResultSet rs = null;
+                                    try {
+                                        connection = DriverManager.getConnection("jdbc:mysql://112.46.66.4:3306/" + databaseSpinner.getSelectedItem().toString() + "?serverTimezone=UTC&useSSL=false","root","123456");
+                                        statement = connection.createStatement();
+                                        System.err.println("数据库发生改变！！！");
+                                    } catch (SQLException throwables) {
+                                        throwables.printStackTrace();
+                                    }
+                                    try {
+                                        rs = statement.executeQuery(sql);
+                                        if(rs == null)
+                                            return;
+                                    } catch (SQLException e) {
+                                        e.printStackTrace();
+                                        System.err.println("SQL Error Message ->\n" + e.getMessage());
+                                    }
+                                    try {
+                                        arrayList.clear();
+                                        while(rs.next()) {
+                                            arrayList.add(rs.getString(1));
+                                            // GPST DIST    RATIO
+                                        }
+                                        System.err.println("新数据表：" + arrayList);
+                                        ArrayAdapter<String> adapter = new ArrayAdapter<>(context, R.layout.listview_item, arrayList);
+                                        t_handler.post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                tablesSpinner.setAdapter(adapter);
+                                            }
+                                        });
+                                    } catch (SQLException throwables) {
+                                        throwables.printStackTrace();
+                                    }
+                                    System.err.println("_____________________________________________注意：表数据为 " + arrayList);
+                                    t_handler.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            ArrayAdapter<String> adapter = new ArrayAdapter<>(context, R.layout.listview_item, arrayList);
+                                            tablesSpinner.setAdapter(adapter);
+                                        }
+                                    });
+                                }
+                            }).start();
+                        }
+                        @Override
+                        public void onNothingSelected(AdapterView<?> adapterView) {
+
+                        }
+                    });
                 }
             });
-            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> adapterView) {
-                    StyleableToast.makeText(context, "没有选择", Toast.LENGTH_LONG, R.style.mytoast).show();
-                }
-            });
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
         }
         upData();
     });
@@ -122,7 +150,7 @@ public class HomeFragment extends Fragment {
 //                int line = 0;
         Thread selectTable = new Thread(() -> {
             clearAllList();
-            SQL_SELECT_UNKOWN_TABLE = "SELECT * FROM " + spinner.getSelectedItem().toString() + " order by ID desc limit 30;";
+            SQL_SELECT_UNKOWN_TABLE = "SELECT * FROM " + tablesSpinner.getSelectedItem().toString() + " order by ID desc limit 30;";
             ResultSet resultSet = null;
             try {
                 if(statement.isClosed()) {
@@ -133,7 +161,7 @@ public class HomeFragment extends Fragment {
                     return;
                 }
                 boolean statuslook = true;
-                if(spinner.getSelectedItem().toString().equals("BaseStationXYZ"))
+                if(tablesSpinner.getSelectedItem().toString().equals("BaseStationXYZ"))
                 {
                     while(resultSet.next())
                     {
@@ -219,17 +247,15 @@ public class HomeFragment extends Fragment {
             t_handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    if(spinner.getSelectedItem().toString().equals("BaseStationXYZ")) {
+                    if(tablesSpinner.getSelectedItem().toString().equals("BaseStationXYZ")) {
                         String temp = "";
-                        for(int index = 0; index < GPST.size(); index++) {
+                        for(int index = 0; index < GPST.size(); index++)
                             temp += GPST.get(index) + "\t " + BaseName.get(index) + "\t " + BX.get(index) + "\t " + BY.get(index) + "\t " + BZ.get(index) + "\n\n";
-                        }
                         textView.setText(temp);
                     } else {
                         String temp = "";
-                        for(int index = 0; index < GPST.size(); index++) {
-                            temp += GPST.get(index) + "\t " + Dist.get(index) + "\t " + Ratio.get(index) + dRX.get(index) + "\t " + dRY.get(index) + "\t " + dRZ.get(index) +  "\n\n";
-                        }
+                        for(int index = 0; index < GPST.size(); index++)
+                            temp += GPST.get(index) + "\t " + Dist.get(index) + "\t " + Ratio.get(index) + "\t " +  dRX.get(index) + "\t " + dRY.get(index) + "\t " + dRZ.get(index) +  "\n\n";
                         textView.setText(temp);
                     }
                 }
@@ -253,7 +279,8 @@ public class HomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         retView = inflater.inflate(R.layout.home_fragment,container,false);
         textView = retView.findViewById(R.id.result_textview);
-        spinner = retView.findViewById(R.id.spinner);
+        tablesSpinner = retView.findViewById(R.id.tablesSpinner);
+        databaseSpinner = retView.findViewById(R.id.databaseSpinner);
         textView.setMovementMethod(new ScrollingMovementMethod());//设置textview可以滑动
         textView.setScrollbarFadingEnabled(false);//设置scrollbar一直显示
         textView.setOnTouchListener(new View.OnTouchListener() {
@@ -264,6 +291,7 @@ public class HomeFragment extends Fragment {
             }
         });
         // 可以在这里写布局事件
+
         tableListThread.start();
         return retView;
     }
@@ -295,5 +323,13 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+    }
+
+    /**
+     * 设置数据库下拉列表数据
+     * @param arrayList 数据库名集合
+     */
+    public void setDatabaseList(ArrayList<String> arrayList) {
+        databaselist = arrayList;
     }
 }

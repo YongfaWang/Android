@@ -6,11 +6,21 @@
     android:layout_height="match_parent">
 
     <Spinner
-        android:id="@+id/spinner"
-        android:elevation="1dp"
+        android:id="@+id/databaseSpinner"
         android:layout_width="300dp"
         android:layout_height="50dp"
-        android:layout_marginTop="48dp"
+        android:elevation="1dp"
+        app:layout_constraintBottom_toTopOf="@+id/tablesSpinner"
+        app:layout_constraintEnd_toEndOf="@+id/tablesSpinner"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/tablesSpinner" />
+
+    <Spinner
+        android:id="@+id/tablesSpinner"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="96dp"
+        android:elevation="1dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
