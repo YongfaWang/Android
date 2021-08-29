@@ -23,6 +23,10 @@ import com.jv.listen.R;
 
 import org.w3c.dom.Text;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -47,6 +51,7 @@ public class DynamicFragment extends Fragment {
     TextView lineMapTitle;
     Context context;
 
+
     public DynamicFragment(Context context) {
         this.context = context;
     }
@@ -56,9 +61,8 @@ public class DynamicFragment extends Fragment {
             super.handleMessage(msg);
             switch (msg.what) {
                 case ConstText.DATA_CHANGE:
-                    if(lineChartView == null || spinner == null || context == null || lineMapTitle == null)
+                    if(isViewNull())
                         return;
-                    //  数据发生改变
                     Bundle bundle = (Bundle) msg.obj;
                     ArrayList<String> GPST = (ArrayList<String>) bundle.get("GPST");
                     ArrayList<String> Dist = (ArrayList<String>) bundle.get("Dist");
@@ -70,11 +74,7 @@ public class DynamicFragment extends Fragment {
                     ArrayList<String> dRX = (ArrayList<String>) bundle.get("dRX");
                     ArrayList<String> dRY = (ArrayList<String>) bundle.get("dRY");
                     ArrayList<String> dRZ = (ArrayList<String>) bundle.get("dRZ");
-
-                    System.err.println("Base Size -> " + BaseName.size() + "\t" + "Dist Size -> " + Dist.size());
-
                     if(BaseName.size() > Dist.size()) { // BaseStationXYZ 图表
-
                     } else {                    // 其他表
                         // 翻转集合
                         Collections.reverse(GPST);
@@ -107,6 +107,10 @@ public class DynamicFragment extends Fragment {
         }
     };
 
+    private boolean isViewNull() {
+        return lineChartView == null || spinner == null || context == null || lineMapTitle == null;
+    }
+
     /**
      *  配置线图数据。
      *  起初线图什么也没有,只实例化了这个线图对象。
@@ -125,7 +129,8 @@ public class DynamicFragment extends Fragment {
         Line line = new Line(values).setColor(Color.BLUE).setCubic(true);
         List<Line> lines = new ArrayList<>();
         line.setStrokeWidth(2);
-        line.setPointRadius(3);
+//        line.setPointRadius(3);
+        line.setHasPoints(false);
         line.setCubic(false);//曲线是否平滑，即是曲线还是折线\
         lines.add(line);
         LineChartData data = new LineChartData();
@@ -135,8 +140,8 @@ public class DynamicFragment extends Fragment {
 
         // X 轴 数据
         List<AxisValue> axisX = new ArrayList<>();
-        for (int index = 0; index < xList.size(); index++)
-            axisX.add(new AxisValue(index).setLabel(xList.get(index)));
+        for (int index = 0,listIndex = 0; index < yList.size(); index += yList.size() / 30,listIndex++)
+            axisX.add(new AxisValue(index).setLabel(xList.get(listIndex)));
         // X 轴
         Axis axis1 = new Axis();
         axis1.setValues(axisX);
@@ -189,5 +194,4 @@ public class DynamicFragment extends Fragment {
     public Handler getHandler() {
         return handler;
     }
-
 }

@@ -5,6 +5,13 @@
       <map>
         <entry key="../../../../layout/custom_preview.xml" value="1.0096774193548388" />
         <entry key="../../Android/Sdk/platforms/android-31/data/res/layout/simple_list_item_1.xml" value="0.161231884057971" />
+        <entry key="..\:/Temp/Listen/app/src/main/res/layout-land/home_fragment.xml" value="0.1" />
+        <entry key="..\:/Temp/Listen/app/src/main/res/layout/activity_main.xml" value="0.18795289855072464" />
+        <entry key="..\:/Temp/Listen/app/src/main/res/layout/dynamic_fragment.xml" value="0.19610507246376813" />
+        <entry key="..\:/Temp/Listen/app/src/main/res/layout/home_fragment.xml" value="0.25" />
+        <entry key="..\:/Temp/Listen/app/src/main/res/layout/listview_item.xml" value="0.1" />
+        <entry key="..\:/Temp/Listen/app/src/main/res/layout/me_fragment.xml" value="0.19610507246376813" />
+        <entry key="..\:/Temp/Listen/app/src/main/res/layout/table_status_item.xml" value="0.23736404350607807" />
         <entry key="app/src/main/res/drawable/qqlogin_button.xml" value="0.18958333333333333" />
         <entry key="app/src/main/res/drawable/qqlogin_button_style.xml" value="0.18958333333333333" />
         <entry key="app/src/main/res/drawable/shadow_shape.xml" value="0.1" />

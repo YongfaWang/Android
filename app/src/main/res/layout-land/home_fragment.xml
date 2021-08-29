@@ -1,32 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:background="@color/lsBackgound"
     android:layout_height="match_parent">
 
     <Spinner
-        android:id="@+id/spinner"
-        android:elevation="1dp"
+        android:id="@+id/databaseSpinner"
         android:layout_width="300dp"
         android:layout_height="50dp"
-        android:layout_marginTop="48dp"
+        android:elevation="1dp"
+        app:layout_constraintBottom_toTopOf="@+id/tablesSpinner"
+        app:layout_constraintEnd_toEndOf="@+id/tablesSpinner"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/tablesSpinner" />
+
+    <Spinner
+        android:id="@+id/tablesSpinner"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="96dp"
+        android:elevation="1dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+    <EditText
+        android:id="@+id/getdatanum"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="6"
+        android:hint="Input Number"
+        android:inputType="number"
+        android:maxLength="6"
+        app:layout_constraintBottom_toTopOf="@+id/databaseSpinner"
+        app:layout_constraintEnd_toEndOf="@+id/databaseSpinner"
+        app:layout_constraintStart_toStartOf="@+id/databaseSpinner" />
 
     <TextView
         android:id="@+id/result_textview"
         android:layout_width="match_parent"
         android:layout_height="201dp"
-        android:elevation="0dp"
         android:gravity="center_horizontal"
         android:scrollbars="vertical"
         android:textColor="@color/lsRed"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.482"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinner" />
+        app:layout_constraintVertical_bias="0.175"
+        android:elevation="0dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

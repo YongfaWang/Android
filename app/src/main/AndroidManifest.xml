@@ -18,10 +18,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Listen">
 
-        <provider
-            android:name="cn.bmob.v3.util.BmobContentProvider"
-            android:authorities="com.jv.listen.BmobContentProvider" />
-
         <activity
             android:name=".activity.MainActivity"
             android:exported="true">
@@ -31,10 +27,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:name=".activity.Home"
-            android:theme="@style/TranslucentTheme" />
     </application>
 
 </manifest>

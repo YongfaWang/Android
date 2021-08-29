@@ -1,69 +1,172 @@
 package com.jv.listen.activity;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.Intent;
 import android.os.Bundle;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.view.MenuItem;
+import android.view.Window;
+import android.view.WindowManager;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.jv.listen.R;
+import com.jv.listen.fragment.DynamicFragment;
+import com.jv.listen.fragment.HomeFragment;
+import com.jv.listen.fragment.MeFragment;
+import com.jv.listen.utils.StatusBar;
 
-import cn.bmob.v3.Bmob;
-import cn.bmob.v3.BmobUser;
-import cn.bmob.v3.exception.BmobException;
-import cn.bmob.v3.listener.SaveListener;
-import io.github.muddz.styleabletoast.StyleableToast;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    TextView signin;
-    TextView signup;
-    TextView forget;
-    EditText username;
-    EditText password;
+    private Connection connection;
+    private Statement statement;
+    private ArrayList<String> databaseName = new ArrayList<>();
 
-    BmobUser bmobUser;
+    BottomNavigationView bottomNavigationView;
+    HomeFragment homeFragment;
+    DynamicFragment dynamicFragment;
+    MeFragment meFragment;
+    Fragment[] fragments;
+    int lastFragment;//用于记录上个选择的Fragment
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        signin = findViewById(R.id.signin);
-        signup = findViewById(R.id.signup);
-        forget = findViewById(R.id.forget_password);
-        username = findViewById(R.id.username);
-        password = findViewById(R.id.password);
-
-
-
-
-        Bmob.initialize(this, "908ca541b00136936c875b300345d9c3");
-        bmobUser = BmobUser.getCurrentUser();  // 这个函数的返回值是一个用户缓存,如果可以返回则证明上次登录过,反之需要登录
-        if(bmobUser == null) {
-            bmobUser = new BmobUser();
-        } else {
-            startActivity(new Intent(MainActivity.this, Home.class));
-        }
-        signin.setOnClickListener(view -> {
-            bmobUser.setUsername(username.getText().toString());
-            bmobUser.setPassword(password.getText().toString());
-            bmobUser.login(new SaveListener<BmobUser>() {
-                @Override
-                public void done(BmobUser o, BmobException e) {
-                    if(e != null)
-                        StyleableToast.makeText(MainActivity.this,"登录失败：" + e, Toast.LENGTH_LONG,R.style.mytoast).show();
-                    else {
-                        StyleableToast.makeText(MainActivity.this, "登录成功", Toast.LENGTH_LONG, R.style.mytoast).show();
-                        startActivity(new Intent(MainActivity.this, Home.class));
-                    }
+        StatusBar.setStatusBarMode(this, true, R.color.white);
+        // StatusBar.FullScreen.fitsSystemWindows(this);
+        Window window = MainActivity.this.getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+//        StyleableToast.makeText(Home.this,"发哥万岁！", Toast.LENGTH_LONG,R.style.mytoast).show();
+        FragmentManager fragmentManager =  this.getSupportFragmentManager();
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Class.forName("com.mysql.jdbc.Driver");
+                } catch (ClassNotFoundException e) {
+                    System.err.println("--------------------------------------------");
+                    e.printStackTrace();
+                    System.err.println("Class Error Message ->\n" + e.getMessage());
                 }
-            });
-            // StyleableToast.makeText(MainActivity.this,"登录", Toast.LENGTH_LONG,R.style.mytoast).show();
+                try {
+                    connection = DriverManager.getConnection("jdbc:mysql://112.46.66.4:3306/mysql?serverTimezone=UTC&useSSL=false","root","123456");
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                    System.err.println("SQL Error Message ->\n" + throwables.getMessage());
+                    return;
+                }
+                if(connection == null) {
+                    return;
+                }
+                try {
+                    statement = connection.createStatement();
+                    ResultSet mList = statement.executeQuery("show databases;");
+                    int count = mList.getMetaData().getColumnCount();
+                    // 取出带有RTK字符的数据库名
+                    while (mList.next())
+                        for (int i = 0; i < count; i++)
+                            if(mList.getString(i + 1).contains("RTK")) databaseName.add(mList.getString(i + 1));
+                    connection = DriverManager.getConnection("jdbc:mysql://112.46.66.4:3306/" + databaseName.get(0) + "?serverTimezone=UTC&useSSL=false","root","123456");
+                    statement = connection.createStatement();
+                    if(connection == null)
+                        System.err.println("指定数据库返回NULL！！！");
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+//                String sql = "select * from LJH01_LJH15";
+            }
         });
-        signup.setOnClickListener(view -> {
+        thread.start();
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        initFragment();
+        homeFragment.setDatabaseList(databaseName);
+    }
+    //初始化fragment和fragment数组
+    void initFragment()
+    {
+        dynamicFragment = new DynamicFragment(MainActivity.this);
+        meFragment = new MeFragment(MainActivity.this, connection);
+        System.err.println("传入构造时的地址"+ connection);
+        homeFragment = new HomeFragment(connection,statement, MainActivity.this,dynamicFragment.getHandler(),meFragment.getMeFragment());
+        fragments = new Fragment[]{ homeFragment, dynamicFragment, meFragment };
+        lastFragment = 0;
+        getSupportFragmentManager().beginTransaction().replace(R.id.views,homeFragment).show(homeFragment).commit();
+        bottomNavigationView = findViewById(R.id.bottomNavigationView);
 
-        });
+        bottomNavigationView.setOnNavigationItemSelectedListener(changeFragment);
+    }
+
+    BottomNavigationView.OnNavigationItemSelectedListener changeFragment= new BottomNavigationView.OnNavigationItemSelectedListener() {
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+            switch (item.getItemId())
+            {
+                case R.id.navigation_home:
+                {
+                    if(lastFragment!=0)
+                    {
+                        switchFragment(lastFragment,0);
+                        lastFragment=0;
+                    }
+                    return true;
+                }
+                case R.id.navigation_dynamic:
+                {
+                    if(lastFragment!=1)
+                    {
+                        switchFragment(lastFragment,1);
+                        lastFragment=1;
+
+                    }
+
+                    return true;
+                }
+                case R.id.navigation_me:
+                {
+                    if(lastFragment!=2)
+                    {
+                        switchFragment(lastFragment,2);
+                        lastFragment=2;
+
+                    }
+
+                    return true;
+                }
+
+
+            }
+
+
+            return false;
+        }
+    };
+
+
+    //切换Fragment
+    void switchFragment(int lastfragment,int index)
+    {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.hide(fragments[lastfragment]);//隐藏上个Fragment
+        if (fragments[index].isAdded() == false) {
+            transaction.add(R.id.views, fragments[index]);
+        }
+        transaction.show(fragments[index]).commitAllowingStateLoss();
     }
 }
