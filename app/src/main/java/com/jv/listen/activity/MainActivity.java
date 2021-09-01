@@ -1,11 +1,14 @@
 package com.jv.listen.activity;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -16,6 +19,7 @@ import com.jv.listen.R;
 import com.jv.listen.fragment.DynamicFragment;
 import com.jv.listen.fragment.HomeFragment;
 import com.jv.listen.fragment.MeFragment;
+import com.jv.listen.utils.Permission;
 import com.jv.listen.utils.StatusBar;
 
 import java.sql.Connection;
@@ -43,6 +47,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if(!Permission.IgnoringBatteryOptimizations.isIgnoringBatteryOptimizations(this)) {
+                Toast.makeText(this, "注意!接下来应用可能会向你申请一个权限,它会防止应用在熄屏后和数据库断开,你如果不同意权限,应用仍可运行,但熄屏后,此应用的所有功能在本次执行将失效.", Toast.LENGTH_SHORT).show();
+                AlertDialog alertDialog =  new AlertDialog.Builder(this).setTitle("注意你的弹窗")
+                        .setMessage("注意!接下来应用可能会向你申请一个权限,它会防止应用在熄屏后和数据库断开,你如果不同意权限,应用仍可运行,但熄屏后,此应用的所有功能在本次执行将失效.\n如果你后悔禁止权限,你可以重启应用,重启如果不可用,可以打开设置搜索'电池优化'将此权限设为允许.").create();
+                alertDialog.show();
+                Permission.IgnoringBatteryOptimizations.requestIgnoreBatteryOptimizations(this);
+            }
+        }
         StatusBar.setStatusBarMode(this, true, R.color.white);
         // StatusBar.FullScreen.fitsSystemWindows(this);
         Window window = MainActivity.this.getWindow();
@@ -133,9 +146,7 @@ public class MainActivity extends AppCompatActivity {
                     {
                         switchFragment(lastFragment,1);
                         lastFragment=1;
-
                     }
-
                     return true;
                 }
                 case R.id.navigation_me:

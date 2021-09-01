@@ -156,7 +156,6 @@ public class HomeFragment extends Fragment {
                     synchronized (context) {
                         clearAllList();
                         SQL_SELECT_UNKOWN_TABLE = "SELECT * FROM " + tablesSpinner.getSelectedItem().toString() + " order by ID desc limit " + getDataConut + ";";
-                        System.err.println("构成语句1：" + SQL_SELECT_UNKOWN_TABLE);
                         ResultSet resultSet = null;
                         try {
                             if (statement.isClosed()) {
