@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
                     System.err.println("Class Error Message ->\n" + e.getMessage());
                 }
                 try {
-                    connection = DriverManager.getConnection("jdbc:mysql://112.46.66.4:3306/mysql?serverTimezone=UTC&useSSL=false","root","123456");
+                    connection = DriverManager.getConnection("jdbc:mysql://112.46.66.4:3306/mysql?serverTimezone=UTC&useSSL=false","root","xgw123456");
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                     System.err.println("SQL Error Message ->\n" + throwables.getMessage());
@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
                     while (mList.next())
                         for (int i = 0; i < count; i++)
                             if(mList.getString(i + 1).contains("RTK")) databaseName.add(mList.getString(i + 1));
-                    connection = DriverManager.getConnection("jdbc:mysql://112.46.66.4:3306/" + databaseName.get(0) + "?serverTimezone=UTC&useSSL=false","root","123456");
+                    connection = DriverManager.getConnection("jdbc:mysql://112.46.66.4:3306/" + databaseName.get(0) + "?serverTimezone=UTC&useSSL=false","root","xgw123456");
                     statement = connection.createStatement();
                     if(connection == null)
                         System.err.println("指定数据库返回NULL！！！");
