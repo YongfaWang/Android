@@ -87,7 +87,7 @@ public class HomeFragment extends Fragment {
                                 String sql = "show tables;";
                                 ResultSet rs = null;
                                 try {
-                                    connection = DriverManager.getConnection("jdbc:mysql://112.46.66.4:3306/" + databaseSpinner.getSelectedItem().toString() + "?serverTimezone=UTC&useSSL=false", "root", "123456");
+                                    connection = DriverManager.getConnection("jdbc:mysql://112.46.66.4:3306/" + databaseSpinner.getSelectedItem().toString() + "?serverTimezone=UTC&useSSL=false", "root", "xgw123456");
                                     statement = connection.createStatement();
                                     System.err.println("数据库发生改变！！！");
                                 } catch (SQLException throwables) {
